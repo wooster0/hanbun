@@ -37,7 +37,7 @@ fn main() {
     let mut y = 0;
     for line in &lines {
         for char in line.chars() {
-            // We place a colored half block for each W we find
+            // We set a colored half block for each W we find
             if char == 'W' {
                 buffer.color(x, y, Color::Green);
             }
@@ -61,6 +61,8 @@ fn main() {
 The result:
 
 ![result](https://user-images.githubusercontent.com/35064754/108411280-b96b3000-7228-11eb-9e06-41b8f634a195.png)
+
+Results may vary depending on the terminal.
 
 Make sure to check out the other examples too!
 You can clone this repository and run examples
