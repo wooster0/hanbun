@@ -1,0 +1,19 @@
+[package]
+name = "hanbun"
+version = "0.1.0"
+authors = ["r00ster91 <r00ster91@protonmail.com>"]
+edition = "2018"
+description = "A library for drawing half blocks to the terminal."
+keywords = ["color", "cli", "terminal", "graphics", "block"]
+categories = ["command-line-utilities", "command-line-interface", "graphics"]
+repository = "https://github.com/r00ster91/hanbun"
+license = "MIT"
+
+[dependencies]
+# I would use termion if it had Windows support
+crossterm = "0.19"
+
+# Only for the examples
+[dev-dependencies]
+font8x8 = "0.2"
+meval = "0.2"
