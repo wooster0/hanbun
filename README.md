@@ -1,7 +1,7 @@
 # 半分
 
 hanbun is a library for drawing half blocks (▀ and ▄) to the terminal.
-This making various kinds of graphics possible.
+This makes various kinds of graphics possible.
 
 ## Example
 
@@ -9,7 +9,7 @@ Here is an example that makes use of common features
 such as creating a buffer, setting colored half blocks, printing text
 and finally drawing the buffer to the screen.
 
-```rs
+```rust
 use hanbun::{self, Color};
 
 fn main() {
@@ -58,7 +58,9 @@ fn main() {
 }
 ```
 
-<!--Add an image here-->
+The result:
+
+![result](https://user-images.githubusercontent.com/35064754/108411280-b96b3000-7228-11eb-9e06-41b8f634a195.png)
 
 Make sure to check out the other examples too!
 You can clone this repository and run examples
