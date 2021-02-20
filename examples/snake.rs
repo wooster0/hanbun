@@ -55,8 +55,6 @@ fn main() -> result::Result<(), String> {
     let mut delay = 100;
 
     loop {
-        // Drawing order matters
-
         draw_border(&mut buffer);
 
         let head = parts[0];
@@ -195,7 +193,7 @@ fn center(buffer: &mut hanbun::Buffer, message: &str, alignment: usize) {
 
 fn game_over(buffer: &mut hanbun::Buffer, score: usize) {
     center(buffer, "GAME OVER", 0);
-    center(buffer, format!("Score: {}", score), 4);
+    center(buffer, &format!("Score: {}", score), 4);
     buffer.draw();
     thread::sleep(time::Duration::from_secs(1));
     process::exit(0);
