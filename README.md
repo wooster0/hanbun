@@ -28,9 +28,9 @@ fn main() {
         "     W       WW    W",
     ];
 
-    // We need a buffer to store the state of each cell
     let width = lines.iter().map(|line| line.len()).max().unwrap();
     let height = lines.len() / 2 + 2;
+    // Here we store the state of each cell
     let mut buffer = hanbun::Buffer::new(width, height, ' ');
 
     let mut x = 0;
@@ -41,10 +41,8 @@ fn main() {
             if char == 'W' {
                 buffer.color(x, y, Color::Green);
             }
-            // Advance to the right
             x += 1;
         }
-        // New line
         y += 1;
         x = 0;
     }

@@ -16,23 +16,21 @@ fn main() {
         "     W       WW    W",
     ];
 
-    // Here we store the state of each cell
     let width = lines.iter().map(|line| line.len()).max().unwrap();
     let height = lines.len() / 2 + 2;
+    // Here we store the state of each cell
     let mut buffer = hanbun::Buffer::new(width, height, ' ');
 
     let mut x = 0;
     let mut y = 0;
     for line in &lines {
         for char in line.chars() {
-            // We place a colored half block for each W we find
+            // We set a colored half block for each W we find
             if char == 'W' {
                 buffer.color(x, y, Color::Green);
             }
-            // Advance to the right
             x += 1;
         }
-        // New line
         y += 1;
         x = 0;
     }
