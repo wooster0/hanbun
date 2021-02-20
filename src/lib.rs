@@ -87,19 +87,25 @@ impl Buffer {
         let mut y = 1;
         for cell in &self.cells {
             if cell.upper_block.is_some() && cell.lower_block.is_some() {
-                if let Some(Some(color)) = cell.upper_block {
-                    if let Some(Some(color)) = cell.lower_block {
-                        queue!(writer, SetBackgroundColor(color)).unwrap();
+                if let Some(Some(upper_color)) = cell.upper_block {
+                    if let Some(Some(lower_color)) = cell.lower_block {
+                        queue!(writer, SetForegroundColor(upper_color)).unwrap();
+                        queue!(writer, SetBackgroundColor(lower_color)).unwrap();
+                        writer.write_all("▀".as_bytes()).unwrap();
+                    } else {
+                        queue!(writer, SetBackgroundColor(upper_color)).unwrap();
+                        writer.write_all("▄".as_bytes()).unwrap();
                     }
-                    queue!(writer, SetForegroundColor(color)).unwrap();
-                    writer.write_all("▀".as_bytes()).unwrap();
                     queue!(writer, ResetColor).unwrap();
-                } else if let Some(Some(color)) = cell.lower_block {
-                    if let Some(Some(color)) = cell.upper_block {
-                        queue!(writer, SetForegroundColor(color)).unwrap();
+                } else if let Some(Some(lower_color)) = cell.lower_block {
+                    if let Some(Some(upper_color)) = cell.upper_block {
+                        queue!(writer, SetForegroundColor(upper_color)).unwrap();
+                        queue!(writer, SetBackgroundColor(lower_color)).unwrap();
+                        writer.write_all("▀".as_bytes()).unwrap();
+                    } else {
+                        queue!(writer, SetBackgroundColor(lower_color)).unwrap();
+                        writer.write_all("▀".as_bytes()).unwrap();
                     }
-                    queue!(writer, SetBackgroundColor(color)).unwrap();
-                    writer.write_all("▀".as_bytes()).unwrap();
                     queue!(writer, ResetColor).unwrap();
                 } else {
                     writer.write_all("█".as_bytes()).unwrap();
