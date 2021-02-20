@@ -156,6 +156,7 @@ fn main() -> std::result::Result<(), ()> {
                         for x in 0..width {
                             if cursor_x == x && cursor_y == y {
                                 // Map the buttons
+                                let is_operator = input.ends_with('+') || input.ends_with('-');
                                 let char = match (x, y) {
                                     (0, 0) => '1',
                                     (1, 0) => '2',
@@ -166,13 +167,23 @@ fn main() -> std::result::Result<(), ()> {
                                     (0, 2) => '7',
                                     (1, 2) => '8',
                                     (2, 2) => '9',
-                                    (0, 3) => '+',
+                                    (0, 3) => {
+                                        if is_operator {
+                                            break;
+                                        }
+                                        '+'
+                                    }
                                     (1, 3) => '0',
-                                    (2, 3) => '-',
+                                    (2, 3) => {
+                                        if is_operator {
+                                            break;
+                                        }
+                                        '-'
+                                    }
                                     _ => '1',
                                 };
                                 input.push(char);
-                                if !(input.ends_with('+') || input.ends_with('-')) {
+                                if is_operator {
                                     result = meval::eval_str(&input).unwrap().to_string();
                                 }
                             }
