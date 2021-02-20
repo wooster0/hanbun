@@ -1,7 +1,10 @@
-# 半分
+<h1 align="center">
+  半分
+</h1>
 
-hanbun is a library for drawing half blocks (▀ and ▄) to the terminal.
-This makes various kinds of graphics possible.
+<h5 align="center">
+  hanbun is a library for drawing half blocks (<code>▀</code> and <code>▄</code>) to the terminal, which allows rendering of various graphics.
+</h5>
 
 ## Example
 
@@ -69,3 +72,4 @@ like the calculator using `cargo run --example calculator`.
 ## Footnotes
 
 This is my first Rust library to make some crate development experience.
+As of now, the library is useable but if you do repeated drawing you might experience some tearing. On the bright side you get that nostalgic feeling of old displays.

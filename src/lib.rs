@@ -3,7 +3,7 @@
 // console = physical terminal
 
 //! Welcome to the top of the hanbun crate.
-//! [`Buffer`] should be of interest for you.
+//! [`Buffer`] should be of interest to you.
 
 use crossterm::queue;
 use crossterm::style::{ResetColor, SetBackgroundColor, SetForegroundColor};
