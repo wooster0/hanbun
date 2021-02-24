@@ -13,12 +13,12 @@ use std::io::{self, stdout, BufWriter, Write};
 ///
 /// # Errors
 ///
-/// May return an error string indicating that the operation failed.
-pub fn size() -> Result<(usize, usize), &'static str> {
+/// May return an error if the operation failed.
+pub fn size() -> Result<(usize, usize), ()> {
     if let Ok((width, height)) = crossterm::terminal::size() {
         Ok((width as usize, height as usize))
     } else {
-        Err("Unable to retrieve terminal size")
+        Err(())
     }
 }
 
@@ -156,22 +156,23 @@ impl Buffer {
     /// Panics if (`x`, `y`) is out of the buffer's range.
     pub fn set(&mut self, x: usize, y: usize) {
         let position = x + self.width * (y / 2);
-        if let Some(current_cell) = &self.cells.get(position) {
-            if y % 2 == 0 {
-                self.cells[position] = Cell {
-                    upper_block: Some(None),
-                    lower_block: current_cell.lower_block,
-                    char: ' ',
-                };
-            } else {
-                self.cells[position] = Cell {
-                    upper_block: current_cell.upper_block,
-                    lower_block: Some(None),
-                    char: ' ',
-                };
-            }
+        let current_cell = &self
+            .cells
+            .get(position)
+            .expect(&format!("setting block at ({}, {}) (out of range)", x, y));
+
+        if y % 2 == 0 {
+            self.cells[position] = Cell {
+                upper_block: Some(None),
+                lower_block: current_cell.lower_block,
+                char: ' ',
+            };
         } else {
-            panic!("Given position ({}, {}) is out of buffer range", x, y);
+            self.cells[position] = Cell {
+                upper_block: current_cell.upper_block,
+                lower_block: Some(None),
+                char: ' ',
+            };
         }
     }
 
@@ -182,7 +183,10 @@ impl Buffer {
     /// Panics if (`x`, `y`) is out of the buffer's range.
     pub fn color(&mut self, x: usize, y: usize, color: Color) {
         let position = x + self.width * (y / 2);
-        let current_cell = &self.cells[position];
+        let current_cell = &self
+            .cells
+            .get(position)
+            .expect(&format!("coloring block at ({}, {}) (out of range)", x, y));
 
         if y % 2 == 0 {
             self.cells[position] = Cell {
@@ -208,7 +212,12 @@ impl Buffer {
         let position = x + self.width * (y / 2);
 
         for (index, char) in string.chars().enumerate() {
-            self.cells[index + position] = Cell {
+            let cell = self
+                .cells
+                .get_mut(index + position)
+                .expect(&format!("printing at ({}, {}) (out of range)", x, y));
+
+            *cell = Cell {
                 upper_block: None,
                 lower_block: None,
                 char,
