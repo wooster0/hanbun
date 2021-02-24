@@ -1,3 +1,5 @@
+[`Documentation`](https://docs.rs/hanbun) [`Repository`](https://github.com/r00ster91/hanbun) [`crates.io`](https://crates.io/crates/hanbun)
+
 <h1 align="center">
   半分
 </h1>
@@ -6,7 +8,22 @@
   hanbun is a library for drawing half blocks (<code>▀</code> and <code>▄</code>) to the terminal, which allows rendering of various graphics.
 </h5>
 
-## Example
+<p align="center">
+  <img alt="Ferris" src="https://user-images.githubusercontent.com/35064754/108974152-788a7580-7685-11eb-8fe9-1eec67639ff8.png" />
+  <p align="center">
+    <i>Ferris rendered using <code>examples/image.rs</code></i>
+  </p>
+</p>
+
+## Installation
+
+Add the following line to your `Cargo.toml` file:
+
+```
+hanbun = "0.2.0"
+```
+
+## Examples
 
 Here is an example that makes use of common features
 such as creating a buffer, setting colored half blocks, printing text
@@ -61,13 +78,18 @@ fn main() {
 
 The result:
 
-![result](https://user-images.githubusercontent.com/35064754/108411280-b96b3000-7228-11eb-9e06-41b8f634a195.png)
+![Result](https://user-images.githubusercontent.com/35064754/108411280-b96b3000-7228-11eb-9e06-41b8f634a195.png)
 
 Results may vary depending on the terminal.
 
 Make sure to check out the other examples too!
-You can clone this repository and run examples
-like the calculator using `cargo run --example calculator`.
+You can run examples like the calculator right now:
+
+```console
+git clone https://github.com/r00ster91/hanbun.git
+cd hanbun
+cargo run --example calculator
+```
 
 ## Footnotes
 
