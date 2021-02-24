@@ -83,7 +83,7 @@ fn main() -> result::Result<(), String> {
 
         center(&mut buffer, &score.to_string(), 0);
 
-        // This has to come after drawing the score so that it's visible in every case
+        // This has to come last so that it's visible in every case
         buffer.color(food_position.x, food_position.y, Color::Red);
 
         buffer.draw();

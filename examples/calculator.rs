@@ -7,6 +7,8 @@ use crossterm::{
 
 use meval;
 
+use std::process;
+
 // Generates a grid of cells (not to be confused with the terminal's cells).
 fn grid(
     buffer: &mut hanbun::Buffer,
@@ -68,17 +70,25 @@ struct Button {
 }
 
 fn main() -> std::result::Result<(), ()> {
-    println!("Input: W, A, S, D and Enter\nExit: ESC\nPress any of these keys to start!");
-
     let size = hanbun::size();
-
     let mut buffer;
     if let Ok((width, height)) = size {
+        let required_width = 25;
+        let required_height = 21;
+        if width <= required_width || height <= required_height {
+            eprintln!(
+                "Terminal width and height need to be >={} and >={} respectively.",
+                required_width, required_height
+            );
+            process::exit(1);
+        }
         buffer = hanbun::Buffer::new(width as usize, height as usize, ' ');
     } else {
         eprintln!("Unable to get terminal size");
-        return std::result::Result::Err(());
+        process::exit(1);
     };
+
+    println!("Input: W, A, S, D and Enter\nExit: ESC\nPress any of these keys to start!");
 
     let mut cursor_x = 0;
     let mut cursor_y = 0;

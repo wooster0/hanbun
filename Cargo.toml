@@ -18,3 +18,4 @@ crossterm = "0.19"
 font8x8 = "0.2"
 meval = "0.2"
 rand = { version = "0.8", features = ["small_rng"] }
+image = "0.23.13"
