@@ -5,11 +5,23 @@
 //! Welcome to the top of the hanbun crate.
 //! [`Buffer`] should be of interest to you.
 
-use crossterm::queue;
-use crossterm::style::{ResetColor, SetBackgroundColor, SetForegroundColor};
+use crossterm::{
+    queue,
+    style::{ResetColor, SetBackgroundColor, SetForegroundColor},
+};
 use std::io::{self, stdout, BufWriter, Write};
 
 /// Returns the terminal's width and height.
+///
+/// # Examples
+///
+/// ```
+/// if let Ok((width, height)) = hanbun::size() {
+///     println!("Your terminal has {} cells!", width*height);
+/// } else {
+///     eprintln!("Failed to get terminal size!");
+/// }
+/// ```
 ///
 /// # Errors
 ///
@@ -22,13 +34,19 @@ pub fn size() -> Result<(usize, usize), ()> {
     }
 }
 
-/// Represents a terminal cell.
+/// Represents a terminal cell. Every cell has two blocks.
 #[derive(Debug, Clone)]
 pub struct Cell {
-    pub upper_block: Option<Option<crossterm::style::Color>>,
-    pub lower_block: Option<Option<crossterm::style::Color>>,
-    /// The fallback character displayed if both [`Cell::upper_block`] and [`Cell::lower_block`] are [`None`].
-    pub char: char,
+    /// The upper block. It can be modified using [`Buffer::set`] and [`Buffer::color`].
+    pub upper_block: Option<Option<Color>>,
+    /// The lower block. It can be modified using [`Buffer::set`] and [`Buffer::color`].
+    pub lower_block: Option<Option<Color>>,
+    /// The character used if both [`Cell::upper_block`] and [`Cell::lower_block`] are [`None`].
+    ///
+    /// This character occupies the whole cell.
+    pub char: Option<char>,
+    /// A color for [`Cell::char`].
+    pub char_color: Option<Color>,
 }
 
 /// A buffer for storing the state of the cells.
@@ -66,7 +84,8 @@ impl Buffer {
                 Cell {
                     upper_block: None,
                     lower_block: None,
-                    char
+                    char: Some(char),
+                    char_color: None
                 };
                 width * height
             ],
@@ -86,6 +105,7 @@ impl Buffer {
         let mut x = 0;
         let mut y = 1;
         for cell in &self.cells {
+            // NOTE: This can be improved after https://github.com/rust-lang/rust/issues/53667
             if cell.upper_block.is_some() && cell.lower_block.is_some() {
                 if let Some(Some(upper_color)) = cell.upper_block {
                     if let Some(Some(lower_color)) = cell.lower_block {
@@ -126,8 +146,17 @@ impl Buffer {
                 if lower_block.is_some() {
                     queue!(writer, ResetColor).unwrap();
                 }
+            } else if let Some(char) = &cell.char {
+                if let Some(color) = cell.char_color {
+                    queue!(writer, SetForegroundColor(color)).unwrap();
+                }
+
+                write!(writer, "{}", char).unwrap();
+                if cell.char_color.is_some() {
+                    queue!(writer, ResetColor).unwrap();
+                }
             } else {
-                write!(writer, "{}", cell.char).unwrap();
+                unreachable!();
             }
 
             x += 1;
@@ -145,7 +174,18 @@ impl Buffer {
         self.cells.fill(Cell {
             upper_block: None,
             lower_block: None,
-            char,
+            char: Some(char),
+            char_color: None,
+        })
+    }
+
+    /// Clears the buffer using `char` colored with `color`.
+    pub fn colored_clear(&mut self, char: char, color: Color) {
+        self.cells.fill(Cell {
+            upper_block: None,
+            lower_block: None,
+            char: Some(char),
+            char_color: Some(color),
         })
     }
 
@@ -165,18 +205,20 @@ impl Buffer {
             self.cells[position] = Cell {
                 upper_block: Some(None),
                 lower_block: current_cell.lower_block,
-                char: ' ',
+                char: None,
+                char_color: None,
             };
         } else {
             self.cells[position] = Cell {
                 upper_block: current_cell.upper_block,
                 lower_block: Some(None),
-                char: ' ',
+                char: None,
+                char_color: None,
             };
         }
     }
 
-    /// Colors the cell at (`x`, `y`) with the given color.
+    /// Colors the cell at (`x`, `y`) with `color`.
     ///
     /// # Panics
     ///
@@ -192,18 +234,20 @@ impl Buffer {
             self.cells[position] = Cell {
                 upper_block: Some(Some(color)),
                 lower_block: current_cell.lower_block,
-                char: ' ',
+                char: None,
+                char_color: None,
             };
         } else {
             self.cells[position] = Cell {
                 upper_block: current_cell.upper_block,
                 lower_block: Some(Some(color)),
-                char: ' ',
+                char: None,
+                char_color: None,
             };
         }
     }
 
-    /// Prints string to (`x`, `y`).
+    /// Prints `string` to (`x`, `y`).
     ///
     /// # Panics
     ///
@@ -220,7 +264,31 @@ impl Buffer {
             *cell = Cell {
                 upper_block: None,
                 lower_block: None,
-                char,
+                char: Some(char),
+                char_color: None,
+            };
+        }
+    }
+
+    /// Prints a colored `string` to (`x`, `y`) with `color`.
+    ///
+    /// # Panics
+    ///
+    /// Panics if (`x`, `y`) is out of the buffer's range.
+    pub fn colored_print(&mut self, x: usize, y: usize, string: &str, color: Color) {
+        let position = x + self.width * (y / 2);
+
+        for (index, char) in string.chars().enumerate() {
+            let cell = self
+                .cells
+                .get_mut(index + position)
+                .expect(&format!("printing at ({}, {}) (out of range)", x, y));
+
+            *cell = Cell {
+                upper_block: None,
+                lower_block: None,
+                char: Some(char),
+                char_color: Some(color),
             };
         }
     }
