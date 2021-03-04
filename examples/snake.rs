@@ -20,7 +20,7 @@ const WIDTH: usize = 50;
 const HEIGHT: usize = 50;
 
 fn main() -> result::Result<(), String> {
-    let mut buffer: hanbun::Buffer;
+    let mut buffer;
     if let Ok((width, height)) = hanbun::size() {
         if width <= WIDTH || height <= HEIGHT / 2 {
             return Err(format!(
