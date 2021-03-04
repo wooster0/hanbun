@@ -9,7 +9,22 @@ use crossterm::{
     queue,
     style::{ResetColor, SetBackgroundColor, SetForegroundColor},
 };
-use std::io::{self, stdout, BufWriter, Write};
+use std::{
+    fmt,
+    io::{self, stdout, BufWriter, Write},
+};
+
+/// Returned by [`size`] if the terminal size couldn't be query.
+#[derive(Debug)]
+pub struct TerminalSizeError;
+
+impl fmt::Display for TerminalSizeError {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(formatter, "Failed to query terminal size")
+    }
+}
+
+impl std::error::Error for TerminalSizeError {}
 
 /// Returns the terminal's width and height.
 ///
@@ -25,14 +40,17 @@ use std::io::{self, stdout, BufWriter, Write};
 ///
 /// # Errors
 ///
-/// May return an error if the operation failed.
-pub fn size() -> Result<(usize, usize), ()> {
+/// May return [`TerminalSizeError`] if the operation failed.
+pub fn size() -> Result<(usize, usize), TerminalSizeError> {
     if let Ok((width, height)) = crossterm::terminal::size() {
         Ok((width as usize, height as usize))
     } else {
-        Err(())
+        Err(TerminalSizeError)
     }
 }
+
+/// See [this list](https://docs.rs/crossterm/0.19.0/crossterm/style/enum.Color.html) for all available colors.
+pub type Color = crossterm::style::Color;
 
 /// Represents a terminal cell. Every cell has two blocks.
 #[derive(Debug, Clone)]
@@ -72,9 +90,6 @@ pub struct Buffer {
     pub width: usize,
     pub height: usize,
 }
-
-/// See [this list](https://docs.rs/crossterm/0.19.0/crossterm/style/enum.Color.html) for all available colors.
-pub type Color = crossterm::style::Color;
 
 impl Buffer {
     /// Creates a new buffer of `width * height` cells filled with `char`.
@@ -199,7 +214,7 @@ impl Buffer {
         let current_cell = &self
             .cells
             .get(position)
-            .expect(&format!("setting block at ({}, {}) (out of range)", x, y));
+            .unwrap_or_else(|| panic!("setting block at ({}, {}) (out of range)", x, y));
 
         if y % 2 == 0 {
             self.cells[position] = Cell {
@@ -228,7 +243,7 @@ impl Buffer {
         let current_cell = &self
             .cells
             .get(position)
-            .expect(&format!("coloring block at ({}, {}) (out of range)", x, y));
+            .unwrap_or_else(|| panic!("coloring block at ({}, {}) (out of range)", x, y));
 
         if y % 2 == 0 {
             self.cells[position] = Cell {
@@ -259,7 +274,7 @@ impl Buffer {
             let cell = self
                 .cells
                 .get_mut(index + position)
-                .expect(&format!("printing at ({}, {}) (out of range)", x, y));
+                .unwrap_or_else(|| panic!("printing at ({}, {}) (out of range)", x, y));
 
             *cell = Cell {
                 upper_block: None,
@@ -282,7 +297,7 @@ impl Buffer {
             let cell = self
                 .cells
                 .get_mut(index + position)
-                .expect(&format!("printing at ({}, {}) (out of range)", x, y));
+                .unwrap_or_else(|| panic!("printing at ({}, {}) (out of range)", x, y));
 
             *cell = Cell {
                 upper_block: None,
