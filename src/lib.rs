@@ -14,7 +14,7 @@ use std::{
     io::{self, stdout, BufWriter, Write},
 };
 
-/// Returned by [`size`] if the terminal size couldn't be query.
+/// Returned by [`size`] if querying the terminal size failed.
 #[derive(Debug)]
 pub struct TerminalSizeError;
 
@@ -86,9 +86,9 @@ pub struct Cell {
 /// ```
 pub struct Buffer {
     pub cells: Vec<Cell>,
-    writer: BufWriter<io::Stdout>,
     pub width: usize,
     pub height: usize,
+    writer: BufWriter<io::Stdout>,
 }
 
 impl Buffer {
