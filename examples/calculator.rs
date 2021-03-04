@@ -9,6 +9,13 @@ use meval;
 
 use std::process;
 
+#[derive(Debug)]
+struct Button {
+    x: usize,
+    y: usize,
+    digit: usize,
+}
+
 // Generates a grid of cells (not to be confused with the terminal's cells).
 fn grid(
     buffer: &mut hanbun::Buffer,
@@ -62,11 +69,8 @@ fn grid(
     buttons
 }
 
-#[derive(Debug)]
-struct Button {
-    x: usize,
-    y: usize,
-    digit: usize,
+fn is_operator(input: &str) -> bool {
+    input.ends_with('+') || input.ends_with('-')
 }
 
 fn main() -> std::result::Result<(), ()> {
@@ -166,7 +170,6 @@ fn main() -> std::result::Result<(), ()> {
                         for x in 0..width {
                             if cursor_x == x && cursor_y == y {
                                 // Map the buttons
-                                let is_operator = input.ends_with('+') || input.ends_with('-');
                                 let char = match (x, y) {
                                     (0, 0) => '1',
                                     (1, 0) => '2',
@@ -178,14 +181,14 @@ fn main() -> std::result::Result<(), ()> {
                                     (1, 2) => '8',
                                     (2, 2) => '9',
                                     (0, 3) => {
-                                        if is_operator {
+                                        if is_operator(&input) {
                                             break;
                                         }
                                         '+'
                                     }
                                     (1, 3) => '0',
                                     (2, 3) => {
-                                        if is_operator {
+                                        if is_operator(&input) {
                                             break;
                                         }
                                         '-'
@@ -193,7 +196,8 @@ fn main() -> std::result::Result<(), ()> {
                                     _ => '1',
                                 };
                                 input.push(char);
-                                if is_operator {
+
+                                if !is_operator(&input) {
                                     result = meval::eval_str(&input).unwrap().to_string();
                                 }
                             }

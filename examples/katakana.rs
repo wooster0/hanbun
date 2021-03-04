@@ -113,7 +113,7 @@ fn main() {
     });
     cursor.advance();
 
-    buffer.print(12, 0, " Use   type  to");
+    buffer.print(12, 0, "Press  type  to");
     buffer.print(12, 2, "AIUEO  and  quit.");
     buffer.print(12, 4, " to    ESC");
 
