@@ -20,7 +20,7 @@
 Add the following line to your `Cargo.toml` file:
 
 ```
-hanbun = "0.3.0"
+hanbun = "0.4.0"
 ```
 
 ## Examples
