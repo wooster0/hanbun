@@ -1,3 +1,7 @@
+### [Wool](https://github.com/r00ster91/wool) supersedes this library. It can do everything this library can.
+
+---
+
 [`Documentation`](https://docs.rs/hanbun) [`Repository`](https://github.com/r00ster91/hanbun) [`crates.io`](https://crates.io/crates/hanbun)
 
 <h1 align="center">
