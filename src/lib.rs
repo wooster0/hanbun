@@ -11,7 +11,7 @@ use crossterm::{
 };
 use std::{
     fmt,
-    io::{self, stdout, BufWriter, Write},
+    io::{stdout, BufWriter, Stdout, Write},
 };
 
 /// Returned by [`size`] if querying the terminal size failed.
@@ -84,16 +84,28 @@ pub struct Cell {
 /// buffer.set(3, 3);
 /// buffer.draw();
 /// ```
-pub struct Buffer {
+pub struct Buffer<W: Write> {
     pub cells: Vec<Cell>,
     pub width: usize,
     pub height: usize,
-    writer: BufWriter<io::Stdout>,
+    pub writer: BufWriter<W>,
 }
 
-impl Buffer {
+impl Buffer<Stdout> {
     /// Creates a new buffer of `width * height` cells filled with `char`.
-    pub fn new(width: usize, height: usize, char: char) -> Buffer {
+    pub fn new(width: usize, height: usize, char: char) -> Buffer<Stdout> {
+        Buffer::with_writer(
+            width,
+            height,
+            char,
+            BufWriter::with_capacity(width * height, stdout()),
+        )
+    }
+}
+
+impl<W: Write> Buffer<W> {
+    /// Creates a new buffer of `width * height` cells filled with `char`.
+    pub fn with_writer(width: usize, height: usize, char: char, writer: BufWriter<W>) -> Buffer<W> {
         Buffer {
             cells: vec![
                 Cell {
@@ -104,7 +116,7 @@ impl Buffer {
                 };
                 width * height
             ],
-            writer: BufWriter::with_capacity(width * height, stdout()),
+            writer,
             width,
             height,
         }
