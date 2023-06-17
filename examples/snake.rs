@@ -3,6 +3,7 @@ use hanbun::{self, Color};
 use rand::rngs::SmallRng;
 use rand::{Rng, SeedableRng};
 
+use std::io::Write;
 use std::{process, result, thread, time};
 
 use crossterm::{
@@ -105,8 +106,8 @@ fn main() -> result::Result<(), String> {
     }
 }
 
-fn r#move(
-    buffer: &mut hanbun::Buffer,
+fn r#move<W: Write>(
+    buffer: &mut hanbun::Buffer<W>,
     parts: &mut Vec<Position>,
     direction: &Direction,
     score: usize,
@@ -148,7 +149,7 @@ fn r#move(
     }
 }
 
-fn draw_border(buffer: &mut hanbun::Buffer) {
+fn draw_border<W: Write>(buffer: &mut hanbun::Buffer<W>) {
     // -----
     //
     // -----
@@ -168,8 +169,8 @@ fn draw_border(buffer: &mut hanbun::Buffer) {
     // +---+
 }
 
-fn spawn_food(
-    buffer: &mut hanbun::Buffer,
+fn spawn_food<W: Write>(
+    buffer: &mut hanbun::Buffer<W>,
     width: usize,
     height: usize,
     rng: &mut SmallRng,
@@ -183,7 +184,7 @@ fn spawn_food(
     position
 }
 
-fn center(buffer: &mut hanbun::Buffer, message: &str, alignment: usize) {
+fn center<W: Write>(buffer: &mut hanbun::Buffer<W>, message: &str, alignment: usize) {
     buffer.print(
         WIDTH / 2 - message.len() / 2,
         HEIGHT / 2 + alignment,
@@ -191,7 +192,7 @@ fn center(buffer: &mut hanbun::Buffer, message: &str, alignment: usize) {
     );
 }
 
-fn game_over(buffer: &mut hanbun::Buffer, score: usize) {
+fn game_over<W: Write>(buffer: &mut hanbun::Buffer<W>, score: usize) {
     center(buffer, "GAME OVER", 0);
     center(buffer, &format!("Score: {}", score), 4);
     buffer.draw();

@@ -7,7 +7,7 @@ use crossterm::{
 
 use meval;
 
-use std::process;
+use std::{io::Write, process};
 
 #[derive(Debug)]
 struct Button {
@@ -17,8 +17,8 @@ struct Button {
 }
 
 // Generates a grid of cells (not to be confused with the terminal's cells).
-fn grid(
-    buffer: &mut hanbun::Buffer,
+fn grid<W: Write>(
+    buffer: &mut hanbun::Buffer<W>,
     base_x: usize,
     base_y: usize,
     width: usize,

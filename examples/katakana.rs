@@ -5,7 +5,7 @@ use crossterm::{
     terminal::{disable_raw_mode, enable_raw_mode},
 };
 
-use std::process;
+use std::{io::Write, process};
 
 #[derive(Clone, PartialEq)]
 struct Cursor {
@@ -45,18 +45,18 @@ WWW";
         self.x = Self::CHARACTER_SIZE;
     }
 
-    fn draw(&self, buffer: &mut hanbun::Buffer) {
+    fn draw<W: Write>(&self, buffer: &mut hanbun::Buffer<W>) {
         w_to_half_block(buffer, self, Cursor::SHAPE, |x, y, buffer| {
             buffer.color(x, y, Color::DarkGrey);
         });
     }
 }
 
-fn w_to_half_block(
-    buffer: &mut hanbun::Buffer,
+fn w_to_half_block<W: Write>(
+    buffer: &mut hanbun::Buffer<W>,
     cursor: &Cursor,
     string: &str,
-    function: fn(usize, usize, &mut hanbun::Buffer),
+    function: fn(usize, usize, &mut hanbun::Buffer<W>),
 ) {
     let mut x = 0;
     let mut y = 0;
@@ -72,7 +72,11 @@ fn w_to_half_block(
     }
 }
 
-fn clear_space(buffer: &mut hanbun::Buffer, cleared_spaces: &mut Vec<Cursor>, cursor: &Cursor) {
+fn clear_space<W: Write>(
+    buffer: &mut hanbun::Buffer<W>,
+    cleared_spaces: &mut Vec<Cursor>,
+    cursor: &Cursor,
+) {
     for y in 0..Cursor::CHARACTER_SIZE {
         // The space's brightness depends on how often the space has been cleared
         let count = cleared_spaces
